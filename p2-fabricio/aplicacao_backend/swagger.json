@@ -1,0 +1,268 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Backend - Trabalho Prático",
+    "version": "1.0.0",
+    "description": "API segura com autenticação JWT, persistência SQL (Usuários) e NoSQL (Carros, Motos, Roupas)."
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "UserRegister": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": { "type": "string", "example": "João Silva" },
+          "email": { "type": "string", "example": "joao@email.com" },
+          "password": { "type": "string", "example": "senhaSegura123" }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "example": "joao@email.com" },
+          "password": { "type": "string", "example": "senhaSegura123" }
+        }
+      },
+      "Carro": {
+        "type": "object",
+        "required": ["marca", "modelo", "ano"],
+        "properties": {
+          "marca": { "type": "string", "example": "Toyota" },
+          "modelo": { "type": "string", "example": "Corolla" },
+          "ano": { "type": "integer", "example": 2022 }
+        }
+      },
+      "Moto": {
+        "type": "object",
+        "required": ["marca", "modelo", "cilindradas", "ano"],
+        "properties": {
+          "marca": { "type": "string", "example": "Yamaha" },
+          "modelo": { "type": "string", "example": "MT-07" },
+          "cilindradas": { "type": "integer", "example": 689 },
+          "ano": { "type": "integer", "example": 2023 }
+        }
+      },
+      "Roupa": {
+        "type": "object",
+        "required": ["nome", "paisOrigem", "anoFundacao"],
+        "properties": {
+          "nome": { "type": "string", "example": "Nike" },
+          "paisOrigem": { "type": "string", "example": "Estados Unidos" },
+          "anoFundacao": { "type": "integer", "example": 1964 }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Registra um novo usuário (SQL)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserRegister" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuário criado com sucesso" },
+          "400": { "description": "Erro de validação" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Realiza login e retorna JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserLogin" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login realizado com sucesso (Retorna JWT)" },
+          "400": { "description": "Credenciais inválidas" }
+        }
+      }
+    },
+    "/api/carros": {
+      "get": {
+        "tags": ["Carros"],
+        "summary": "Lista todos os carros",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de carros recuperada" },
+          "401": { "description": "Não autorizado" }
+        }
+      },
+      "post": {
+        "tags": ["Carros"],
+        "summary": "Cria um novo carro",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Carro" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Carro criado" }
+        }
+      }
+    },
+    "/api/carros/{id}": {
+      "get": {
+        "tags": ["Carros"],
+        "summary": "Busca carro por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Carro encontrado" }, "404": { "description": "Carro não encontrado" } }
+      },
+      "put": {
+        "tags": ["Carros"],
+        "summary": "Atualiza carro por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Carro" } } }
+        },
+        "responses": { "200": { "description": "Carro atualizado" } }
+      },
+      "delete": {
+        "tags": ["Carros"],
+        "summary": "Deleta carro por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Carro deletado" } }
+      }
+    },
+    "/api/motos": {
+      "get": {
+        "tags": ["Motos"],
+        "summary": "Lista todas as motos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de motos recuperada" } }
+      },
+      "post": {
+        "tags": ["Motos"],
+        "summary": "Cria uma nova moto",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Moto" } }
+          }
+        },
+        "responses": { "201": { "description": "Moto criada" } }
+      }
+    },
+    "/api/motos/{id}": {
+      "get": {
+        "tags": ["Motos"],
+        "summary": "Busca moto por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Moto encontrada" }, "404": { "description": "Moto não encontrada" } }
+      },
+      "put": {
+        "tags": ["Motos"],
+        "summary": "Atualiza moto por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Moto" } } }
+        },
+        "responses": { "200": { "description": "Moto atualizada" } }
+      },
+      "delete": {
+        "tags": ["Motos"],
+        "summary": "Deleta moto por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Moto deletada" } }
+      }
+    },
+    "/api/roupas": {
+      "get": {
+        "tags": ["Roupas"],
+        "summary": "Lista todas as roupas",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de roupas recuperada" } }
+      },
+      "post": {
+        "tags": ["Roupas"],
+        "summary": "Cria uma nova roupa",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Roupa" } }
+          }
+        },
+        "responses": { "201": { "description": "Roupa criada" } }
+      }
+    },
+    "/api/roupas/{id}": {
+      "get": {
+        "tags": ["Roupas"],
+        "summary": "Busca roupa por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Roupa encontrada" }, "404": { "description": "Roupa não encontrada" } }
+      },
+      "put": {
+        "tags": ["Roupas"],
+        "summary": "Atualiza roupa por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Roupa" } } }
+        },
+        "responses": { "200": { "description": "Roupa atualizada" } }
+      },
+      "delete": {
+        "tags": ["Roupas"],
+        "summary": "Deleta roupa por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Roupa deletada" } }
+      }
+    }
+  }
+}
