@@ -55,11 +55,4 @@ Assim que o terminal confirmar que os containers estão em execução (Running),
 
 📚 Documentação Swagger: http://localhost:3000/api-docs
 
-Como o banco de dados relacional (PostgreSQL) inicia completamente vazio, você não conseguirá fazer login pela interface do Frontend imediatamente.
-
-Para criar o seu usuário administrador inicial e liberar o acesso, abra um terminal e dispare a seguinte requisição HTTP para o seu backend:
-
-Bash
-curl -X POST http://localhost:3000/api/auth/register \
--H "Content-Type: application/json" \
--d '{"name": "Admin", "email": "admin@teste.com", "password": "123"}'
+Para acessar, basta logar com admin@teste.com e senha 123, o sistema cria este usuário base automaticamente na primeira inicialização
