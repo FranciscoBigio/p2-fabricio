@@ -39,3 +39,27 @@ Clone o repositório para a sua máquina e acesse a pasta do projeto:
 ```bash
 git clone <url-do-seu-repositorio>
 cd <nome-da-pasta>
+
+
+Com o Docker em execução e o arquivo .env configurado, abra o seu terminal na raiz do projeto (onde está localizado o arquivo docker-compose.yml) e execute o comando abaixo para baixar as imagens, construir o sistema e rodar tudo em segundo plano:
+
+Bash
+docker-compose up -d --build
+
+```
+Assim que o terminal confirmar que os containers estão em execução (Running), os serviços estarão disponíveis nos seguintes endereços locais:
+
+💻 Frontend (Interface React): http://localhost:8080 (ou a porta padrão definida no seu Vite)
+
+⚙️ Backend (API REST Base): http://localhost:3000/api
+
+📚 Documentação Swagger: http://localhost:3000/api-docs
+
+Como o banco de dados relacional (PostgreSQL) inicia completamente vazio, você não conseguirá fazer login pela interface do Frontend imediatamente.
+
+Para criar o seu usuário administrador inicial e liberar o acesso, abra um terminal e dispare a seguinte requisição HTTP para o seu backend:
+
+Bash
+curl -X POST http://localhost:3000/api/auth/register \
+-H "Content-Type: application/json" \
+-d '{"name": "Admin", "email": "admin@teste.com", "password": "123"}'
